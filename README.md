@@ -52,3 +52,30 @@ jobs:
    ```bash
    npm run build
    ```
+
+## Architecture
+
+This agent is designed as a composite GitHub Action that acts as a bridge between your code and Large Language Models.
+
+```mermaid
+graph TD
+    A[Pull Request Event] -->|Triggers| B(GitHub Action)
+    B --> C{Get Context}
+    C -->|Fetch| D[PR Diff]
+    D -->|Send| E[OpenAI GPT-4o]
+    E -->|Analyze| F[Review Comments]
+    F -->|Post| G[GitHub Pull Request]
+```
+
+## How It Works
+
+1.  **Event Trigger**: The action listens for `pull_request` events.
+2.  **Diff Extraction**: It uses the GitHub API to fetch the changes (diff) made in the PR.
+3.  **AI Analysis**: The diff is sent to OpenAI with a strict system prompt instructing it to identify bugs, security flaws, and style issues, returning the results as structured JSON.
+4.  **Feedback Loop**: The agent parses the JSON response and posts review comments to the specific lines in the PR where issues were detected.
+
+## Design Decisions
+
+-   **Node.js**: Chosen for its rich ecosystem of libraries (`octokit`, `openai`) and native support in GitHub Actions.
+-   **Structured JSON Output**: We force the AI to return JSON to ensure we can programmatically map comments to exact file lines, preventing hallucinated or vague feedback.
+-   **Security First**: The default prompt prioritizes security vulnerabilities to prevent critical issues from merging.
