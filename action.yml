@@ -1,0 +1,24 @@
+name: 'AI PR Reviewer'
+description: 'Automated agent for code review, suggestions, test generation.'
+author: 'Avnish Yadav'
+inputs:
+  openai_key:
+    description: 'OpenAI API Key'
+    required: true
+  github_token:
+    description: 'GitHub Token'
+    required: true
+  model:
+    description: 'OpenAI Model'
+    required: false
+    default: 'gpt-4o'
+  include_severity:
+    description: 'Filter for comment severity (comma separated: info, warning, critical)'
+    required: false
+    default: 'info,warning,critical'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+branding:
+  icon: 'cpu'
+  color: 'purple'
