@@ -79,3 +79,45 @@ graph TD
 -   **Node.js**: Chosen for its rich ecosystem of libraries (`octokit`, `openai`) and native support in GitHub Actions.
 -   **Structured JSON Output**: We force the AI to return JSON to ensure we can programmatically map comments to exact file lines, preventing hallucinated or vague feedback.
 -   **Security First**: The default prompt prioritizes security vulnerabilities to prevent critical issues from merging.
+
+## Testing
+
+### Automated Tests
+Run the unit test suite to verify the logic:
+```bash
+npm test
+```
+
+### Manual Simulation
+You can simulate the reviewer locally without triggering a real GitHub Action:
+1.  Create a `.env` file with your keys:
+    ```env
+    OPENAI_API_KEY=sk-...
+    GITHUB_TOKEN=ghp-...
+    ```
+2.  Run the simulation script:
+    ```bash
+    npx ts-node simulate.ts
+    ```
+
+## Expected Result
+
+When the action detects an issue, it posts a comment directly on the PR line.
+
+**Sample Comment:**
+
+> **[WARNING]** Potential Security Vulnerability
+>
+> You are directly concatenating user input into a SQL query. This is susceptible to SQL Injection attacks.
+>
+> **Suggestion:**
+> Use parameterized queries instead.
+>
+> ```typescript
+> // Bad
+> const query = `SELECT * FROM users WHERE id = ${id}`;
+>
+> // Good
+> const query = 'SELECT * FROM users WHERE id = ?';
+> await db.execute(query, [id]);
+> ```
